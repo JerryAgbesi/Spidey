@@ -10,22 +10,27 @@ void generateAssetPath() async {
 
   final File generatedFile = File(assetPath);
 
-generatedFile
+  generatedFile
       .writeAsStringSync("//THIS IS A GENERATED FILE - DO NOT EDIT BY HAND\n");
-  generatedFile.writeAsStringSync("",mode: FileMode.append);
+  generatedFile.writeAsStringSync("", mode: FileMode.append);
 
-  generatedFile.writeAsStringSync("class Asset{ \n",mode: FileMode.append);
-  generatedFile.writeAsStringSync("",mode: FileMode.append);
+  generatedFile.writeAsStringSync("class Asset{ \n", mode: FileMode.append);
+  generatedFile.writeAsStringSync("", mode: FileMode.append);
 
   final List<FileSystemEntity> dirContent = assetDir.listSync();
 
-  for (var entity in dirContent) {
-    if (entity is File) {
-    final String fileName = entity.path.split("/").last;
-    final String assetName = fileName.split(".").first;
-    generatedFile.writeAsStringSync("static const String $assetName = \"${entity.path}\";\n",mode: FileMode.append);
-      
+  if (assetDir.existsSync()) {
+    for (var entity in dirContent) {
+      if (entity is File) {
+        final String fileName = entity.path.split("/").last;
+        final String assetName = fileName.split(".").first;
+        generatedFile.writeAsStringSync(
+            "static const String $assetName = \"${entity.path}\";\n",
+            mode: FileMode.append);
+      }
     }
+    generatedFile.writeAsStringSync("}", mode: FileMode.append);
+  } else {
+    print("Directory does not exist");
   }
-  generatedFile.writeAsStringSync("}",mode: FileMode.append);
 }
