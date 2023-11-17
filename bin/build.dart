@@ -7,8 +7,7 @@ void main(List<String> arguments) {
 void generateAssetPath() async {
   final String assetPath = 'lib/assets.dart';
 
-  final String pubspecPath = "pubspec.yaml";
-  final String pubspecContent = File(pubspecPath).readAsStringSync();
+  final String pubspecContent = File("pubspec.yaml").readAsStringSync();
 
   //find assets in pubspec.yaml
   int assetsStartIndex = pubspecContent.indexOf("assets:");
@@ -32,6 +31,8 @@ void generateAssetPath() async {
         .map((line) => line.trim().substring(1).trim())
         .toList();
     final File generatedFile = File(assetPath);
+
+    stdout.writeln("[INFO] Generating assets.dart file");
 
     generatedFile.writeAsStringSync(
         "//THIS IS A GENERATED FILE - DO NOT EDIT BY HAND\n");
@@ -62,4 +63,7 @@ void generateAssetPath() async {
   } else {
     print("assets:not found in pubspec.yaml");
   }
+  
+  stdout.writeln("[INFO] Formatting generated file");
+  await Process.run("dart", ["format",assetPath]);
 }
