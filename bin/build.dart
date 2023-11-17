@@ -13,9 +13,7 @@ void generateAssetPath() async {
   int assetsStartIndex = pubspecContent.indexOf("assets:");
 
   if (assetsStartIndex != -1) {
-    String assets = pubspecContent.substring(assetsStartIndex + 5);
-
-    int assetsEndIndex = assets.indexOf("\n");
+    int assetsEndIndex = pubspecContent.indexOf("\n", assetsStartIndex);
 
     // if an end index is not found we assume the rest of the file is a list of assets
     if (assetsEndIndex != -1) {
@@ -63,7 +61,7 @@ void generateAssetPath() async {
   } else {
     print("assets:not found in pubspec.yaml");
   }
-  
+
   stdout.writeln("[INFO] Formatting generated file");
-  await Process.run("dart", ["format",assetPath]);
+  await Process.run("dart", ["format", assetPath]);
 }

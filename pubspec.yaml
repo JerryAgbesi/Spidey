@@ -9,7 +9,7 @@ environment:
 assets:
   - assets/
   - assets/images
-
+  - assets/icons
 # Add regular dependencies here.
 dependencies:
   # path: ^1.8.0
