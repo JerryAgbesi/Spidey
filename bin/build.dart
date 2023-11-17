@@ -37,6 +37,7 @@ void generateAssetPath() async {
     generatedFile.writeAsStringSync("", mode: FileMode.append);
 
     generatedFile.writeAsStringSync("class Asset{ \n", mode: FileMode.append);
+    generatedFile.writeAsStringSync("Asset._(); \n", mode: FileMode.append);
     generatedFile.writeAsStringSync("", mode: FileMode.append);
 
     for (var path in assetsPaths) {
