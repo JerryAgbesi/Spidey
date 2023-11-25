@@ -7,27 +7,30 @@ void main(List<String> arguments) {
 void generateAssetPath() async {
   final String assetPath = 'lib/assets.dart';
 
-  final String pubspecContent = File("pubspec.yaml").readAsStringSync();
+  final List<String> pubspecContent = File("pubspec.yaml").readAsLinesSync();
 
   //find assets in pubspec.yaml
-  int assetsStartIndex = pubspecContent.indexOf("assets:");
+  int assetsStartIndex =
+      pubspecContent.indexWhere((line) => line.trim().startsWith("assets:")) +
+          1;
 
   if (assetsStartIndex != -1) {
-    int assetsEndIndex = pubspecContent.indexOf("\n", assetsStartIndex);
+    //End index is the next ":" after the assets: keyword
+    int assetsEndIndex = pubspecContent.indexWhere(
+        (line) => line.trim().contains(":"), assetsStartIndex + 1);
 
-    // if an end index is not found we assume the rest of the file is a list of assets
-    if (assetsEndIndex != -1) {
+    if (assetsEndIndex == -1) {
       assetsEndIndex = pubspecContent.length;
     }
 
-    String assetsSection =
-        pubspecContent.substring(assetsStartIndex, assetsEndIndex);
+    List assetsSection =
+        pubspecContent.sublist(assetsStartIndex, assetsEndIndex - 1);
 
-    List<String> assetsPaths = assetsSection
-        .split("\n")
-        .where((line) => line.trim().startsWith("-"))
-        .map((line) => line.trim().substring(1).trim())
+    List<dynamic> assetsPaths = assetsSection
+        .map((item) => item.split("-").last.trim())
+        .where((item) => item.isNotEmpty) // Remove empty lines
         .toList();
+
     final File generatedFile = File(assetPath);
 
     stdout.writeln("[INFO] Generating assets.dart file");
@@ -59,10 +62,10 @@ void generateAssetPath() async {
       }
     }
     generatedFile.writeAsStringSync("}", mode: FileMode.append);
-  } else {
-    print("assets:not found in pubspec.yaml");
-  }
 
-  stdout.writeln("[INFO] Formatting generated file");
-  await Process.run("dart", ["format", assetPath]);
+    stdout.writeln("[INFO] Formatting generated file");
+    await Process.run("dart", ["format", assetPath]);
+  } else {
+    stdout.writeln("[ERROR] assets:not found in pubspec.yaml");
+  }
 }
